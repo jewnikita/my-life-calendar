@@ -1,36 +1,191 @@
-name: Generate Calendar Image
+const puppeteer = require('puppeteer');
 
-on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+// Точные размеры обоев для iPhone 16 / 16 Pro
+const WIDTH = 1179;
+const HEIGHT = 2556;
 
-jobs:
-  generate:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # <-- ЭТО ДАЕТ ПРАВА НА ЗАПИСЬ ФАЙЛОВ
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }} # <-- ИСПОЛЬЗУЕМ ТОКЕН
+const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- Подключаем шрифт Inter для премиального вида -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body { 
+    background: #000000; 
+    width: ${WIDTH}px; 
+    height: ${HEIGHT}px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased; /* Делает шрифт тонким и четким как на iOS */
+    overflow: hidden;
+  }
+  
+  .months-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px; /* Отступы между месяцами */
+    width: 92%;
+    margin-bottom: 40px;
+  }
 
-      - name: Install dependencies
-        run: npm install puppeteer
+  .month {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-      - name: Generate calendar PNG
-        run: node generate.js
+  .month-name {
+    font-size: 28px; /* Аккуратный размер заголовка */
+    color: #555;
+    margin-bottom: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase; /* Делаем месяцы прописными для стиля */
+  }
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add calendar.png
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update calendar image" && git push)
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px; /* Расстояние между точками */
+    width: 100%;
+    justify-items: center;
+  }
+
+  .day {
+    width: 22px; /* Крупные точки */
+    height: 22px;
+    border-radius: 50%;
+    background: #222; /* Цвет будущих дней */
+  }
+
+  .day.past { background: #ffffff; }
+  .day.today { background: #ff3b30; } /* Фирменный красный Apple */
+  .day.empty { background: transparent; } /* Пустые клетки для выравнивания */
+
+  .stats {
+    font-size: 42px;
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    align-items: baseline;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+  }
+  .days-left { color: #ff3b30; }
+  .percent { color: #444; font-size: 36px; }
+</style>
+</head>
+<body>
+<div class="months-grid" id="calendar"></div>
+<div class="stats">
+  <span class="days-left" id="daysLeft"></span>
+  <span class="percent" id="percent"></span>
+</div>
+
+<script>
+const monthsRu = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+const now = new Date();
+const year = now.getFullYear();
+const currentMonth = now.getMonth();
+const currentDay = now.getDate();
+
+const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+const calendar = document.getElementById('calendar');
+let totalDaysPassed = 0;
+const totalDays = 365 + (isLeap ? 1 : 0);
+
+monthsRu.forEach((monthName, monthIndex) => {
+  const monthDiv = document.createElement('div');
+  monthDiv.className = 'month';
+  
+  const nameDiv = document.createElement('div');
+  nameDiv.className = 'month-name';
+  nameDiv.textContent = monthName;
+  monthDiv.appendChild(nameDiv);
+  
+  const daysGrid = document.createElement('div');
+  daysGrid.className = 'days-grid';
+  
+  // Логика календаря: определяем день недели для 1-го числа
+  const firstDayDate = new Date(year, monthIndex, 1);
+  let startDay = firstDayDate.getDay(); 
+  // Корректируем под русскую неделю (Пн=0 ... Вс=6)
+  startDay = (startDay === 0) ? 6 : startDay - 1;
+
+  // Добавляем пустые точки в начало
+  for (let i = 0; i < startDay; i++) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'day empty';
+    daysGrid.appendChild(emptyDiv);
+  }
+
+  // Рисуем дни
+  const daysCount = daysInMonths[monthIndex];
+  for (let day = 1; day <= daysCount; day++) {
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'day';
+    
+    if (monthIndex < currentMonth) {
+      dayDiv.classList.add('past');
+      totalDaysPassed++;
+    } else if (monthIndex === currentMonth) {
+      if (day < currentDay) {
+        dayDiv.classList.add('past');
+        totalDaysPassed++;
+      } else if (day === currentDay) {
+        dayDiv.classList.add('today');
+        totalDaysPassed++;
+      }
+    }
+    
+    daysGrid.appendChild(dayDiv);
+  }
+  
+  monthDiv.appendChild(daysGrid);
+  calendar.appendChild(monthDiv);
+});
+
+const daysLeft = totalDays - totalDaysPassed;
+const percent = ((totalDaysPassed / totalDays) * 100).toFixed(1);
+
+document.getElementById('daysLeft').textContent = daysLeft + 'd left';
+document.getElementById('percent').textContent = percent + '%';
+</script>
+</body>
+</html>
+`;
+
+(async () => {
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+  const page = await browser.newPage();
+  
+  await page.setViewport({ width: WIDTH, height: HEIGHT });
+  await page.setContent(html);
+  
+  // Небольшая пауза для загрузки шрифтов
+  await new Promise(r => setTimeout(r, 1000));
+
+  await page.screenshot({
+    path: 'calendar.png',
+    type: 'png',
+    clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT }
+  });
+  
+  await browser.close();
+  console.log('Calendar PNG generated successfully!');
+})();
 
