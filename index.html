@@ -5,98 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life Calendar</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background: #000;
-            color: #fff;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #000; 
+            color: #fff; 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            width: 1179px;
-            height: 2556px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 150px 60px;
+            width: 1080px; 
+            height: 2340px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
             overflow: hidden;
         }
-
-        .calendar-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
         .months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            width: 100%;
-            margin-bottom: 60px;
+            gap: 60px;
+            width: 90%;
+            margin-bottom: 80px;
         }
-
         .month {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
         .month-name {
-            font-size: 28px;
+            font-size: 36px;
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             font-weight: 500;
         }
-
         .days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 12px;
         }
-
         .day {
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #2a2a2a;
         }
-
-        .day.past {
-            background: #fff;
-        }
-
-        .day.today {
-            background: #ff453a;
-        }
-
+        .day.past { background: #fff; }
+        .day.today { background: #ff453a; }
         .stats {
-            font-size: 32px;
-            margin-top: 40px;
+            font-size: 48px;
+            margin-top: 60px;
             display: flex;
-            gap: 20px;
+            gap: 30px;
             align-items: center;
         }
-
-        .days-left {
-            color: #ff453a;
-        }
-
-        .percent {
-            color: #666;
-        }
+        .days-left { color: #ff453a; }
+        .percent { color: #666; }
     </style>
 </head>
 <body>
-    <div class="calendar-container">
-        <div class="months-grid" id="calendar"></div>
-        <div class="stats">
-            <span class="days-left" id="daysLeft"></span>
-            <span class="percent" id="percent"></span>
-        </div>
+    <div class="months-grid" id="calendar"></div>
+    <div class="stats">
+        <span class="days-left" id="daysLeft"></span>
+        <span class="percent" id="percent"></span>
     </div>
 
     <script>
