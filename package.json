@@ -1,0 +1,11 @@
+{
+  "name": "my-life-calendar",
+  "version": "1.0.0",
+  "scripts": {
+    "generate": "node generate.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}
+
