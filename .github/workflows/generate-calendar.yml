@@ -2,15 +2,19 @@ name: Generate Calendar Image
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Запуск каждый день в 00:00 UTC
-  workflow_dispatch: # Возможность ручного запуска
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # <-- ЭТО ДАЕТ ПРАВА НА ЗАПИСЬ ФАЙЛОВ
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # <-- ИСПОЛЬЗУЕМ ТОКЕН
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -18,8 +22,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: |
-          npm install puppeteer
+        run: npm install puppeteer
 
       - name: Generate calendar PNG
         run: node generate.js
