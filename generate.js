@@ -22,7 +22,7 @@ const htmlContent = `<!DOCTYPE html>
   
   .grid {
     position: absolute;
-    top: 767px;              /* Было 30% */
+    top: 500px;              /* Было 30% */
     left: 50%;
     transform: translateX(-50%);
     display: grid;
