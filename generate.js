@@ -20,7 +20,7 @@ const htmlContent = `<!DOCTYPE html>
   }
   .grid {
     position: absolute;
-    top: 25%;
+    top: 34%;
     left: 50%;
     transform: translateX(-50%);
     display: grid;
