@@ -9,19 +9,17 @@ const htmlContent = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <style>
   body { 
-    background: #1A1A1A; 
+    background: #1A1A1A;                // <-- цвет фона (тёмно-серый)
     width: ${WIDTH}px; 
     height: ${HEIGHT}px; 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    /* Смещаем контент выше, чтобы освободить место под виджеты внизу */
-    padding-top: 10%; 
+    padding-top: 8%;                    // <-- отступ сверху (чем больше %, тем ниже календарь)
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     margin: 0; padding: 0;
-    box-sizing: border-box;
   }
   .grid {
     display: grid;
@@ -31,8 +29,7 @@ const htmlContent = `<!DOCTYPE html>
   }
   .month { text-align: center; }
   .name { 
-    /* Более контрастный серый для названий месяцев */
-    color: #888; 
+    color: #888;                        // <-- цвет названий месяцев (серый, контрастный)
     font-size: 26px; 
     margin-bottom: 12px; 
     font-weight: 400;
@@ -52,7 +49,7 @@ const htmlContent = `<!DOCTYPE html>
     background: #2E2E2E; 
   }
   .past { background: #fff; }
-  .today { background: #FF7A45; } /* Яркий оранжевый */
+  .today { background: #FF7A45; }      // <-- цвет сегодняшнего дня (яркий оранжевый)
   .empty { background: transparent; }
   .stats { 
     margin-top: 40px; 
@@ -64,11 +61,11 @@ const htmlContent = `<!DOCTYPE html>
     align-items: baseline;
   }
   .days-left { 
-    color: #FF7A45; /* Яркий оранжевый */
+    color: #FF7A45;                     // <-- цвет текста "дней осталось" (яркий оранжевый)
     font-weight: 300; 
   }
   .percent { 
-    color: #888; /* Более контрастный серый */
+    color: #888;                        // <-- цвет процентов (серый, контрастный)
     font-weight: 300; 
   }
 </style>
@@ -115,8 +112,7 @@ m.forEach((name, mi) => {
 });
 
 const left = total - passed;
-// Округление до целого числа
-const percent = Math.round((passed/total)*100);
+const percent = Math.round((passed/total)*100);  // <-- округление до целого (было .toFixed(1))
 
 document.getElementById('daysLeft').innerText = left + ' дней осталось';
 document.getElementById('percent').innerText = percent + '%';
