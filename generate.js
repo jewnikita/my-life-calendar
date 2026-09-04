@@ -16,33 +16,60 @@ const htmlContent = `<!DOCTYPE html>
     flex-direction: column; 
     align-items: center; 
     justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
     margin: 0; padding: 0;
   }
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 90%;
+    gap: 24px;
+    width: 88%;
   }
   .month { text-align: center; }
-  .name { color: #666; font-size: 24px; margin-bottom: 10px; font-weight: 600; }
+  .name { 
+    color: #555; 
+    font-size: 26px; 
+    margin-bottom: 12px; 
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
   .days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 9px;
     justify-items: center;
   }
-  .dot { width: 18px; height: 18px; border-radius: 50%; background: #222; }
+  .dot { 
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #222; 
+  }
   .past { background: #fff; }
   .today { background: #ff3b30; }
   .empty { background: transparent; }
-  .stats { margin-top: 40px; font-size: 36px; color: #ff3b30; font-weight: 500; }
+  .stats { 
+    margin-top: 50px; 
+    font-size: 40px; 
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    display: flex;
+    gap: 20px;
+    align-items: baseline;
+  }
+  .days-left { color: #ff3b30; font-weight: 300; }
+  .percent { color: #555; font-weight: 300; }
 </style>
 </head>
 <body>
 <div class="grid" id="cal"></div>
-<div class="stats" id="stat"></div>
+<div class="stats">
+  <span class="days-left" id="daysLeft"></span>
+  <span class="percent" id="percent"></span>
+</div>
 <script>
 const m = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
 const now = new Date();
@@ -60,7 +87,11 @@ m.forEach((name, mi) => {
   let fd = new Date(y, mi, 1).getDay();
   fd = (fd === 0) ? 6 : fd - 1;
   
-  for(let i=0; i<fd; i++) { const e=document.createElement('div'); e.className='dot empty'; dd.appendChild(e); }
+  for(let i=0; i<fd; i++) { 
+    const e=document.createElement('div'); 
+    e.className='dot empty'; 
+    dd.appendChild(e); 
+  }
   
   for(let d=1; d<=dim[mi]; d++) {
     const dot = document.createElement('div'); dot.className='dot';
@@ -74,7 +105,11 @@ m.forEach((name, mi) => {
   md.appendChild(dd); cal.appendChild(md);
 });
 
-document.getElementById('stat').innerText = (total-passed) + 'd left  ' + ((passed/total)*100).toFixed(1) + '%';
+const left = total - passed;
+const percent = ((passed/total)*100).toFixed(1);
+
+document.getElementById('daysLeft').innerText = left + ' дней осталось';
+document.getElementById('percent').innerText = percent + '%';
 </script>
 </body></html>`;
 
