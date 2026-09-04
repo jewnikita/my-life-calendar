@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 
-// Размеры остаются прежними
 const WIDTH = 1179;
 const HEIGHT = 2556;
 
@@ -24,29 +23,30 @@ const htmlContent = `<!DOCTYPE html>
   /* СЕТКА ЖИЗНИ */
   .grid {
     position: absolute;
-    top: 767px;
+    top: 600px;              /* <-- Поднял повыше, чтобы влезло в 550-1550 */
     left: 50%;
     transform: translateX(-50%);
     display: grid;
-    grid-template-columns: repeat(90, 1fr);
-    gap: 3px;
-    width: 95%;
+    /* 90 колонок (лет) */
+    grid-template-columns: repeat(90, 1fr); 
+    gap: 2px;                /* Маленький зазор */
+    width: 88%;              /* Та же ширина, что у месяцев */
   }
   
   .dot { 
-    width: 24px; 
-    height: 24px; 
+    width: 8px;              /* Уменьшил точки, чтобы 90 штук влезли */
+    height: 8px;             /* Уменьшил точки */
     border-radius: 50%; 
-    background: #2E2E2E;
+    background: #2E2E2E;     /* Будущее (серый) */
   }
   
-  .past { background: #fff; }
-  .current-year { background: #FF7A45; }
+  .past { background: #fff; }      /* Прожитые месяцы (белый) */
+  .current-month { background: #FF7A45; } /* ТОЛЬКО текущий месяц (оранжевый) */
   
   /* ТЕКСТ ВНИЗУ */
   .stats { 
     position: absolute;
-    top: 2000px;
+    top: 1600px;           /* Текст ниже сетки */
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
@@ -78,35 +78,44 @@ const birthYear = 1996;
 const totalYears = 90;
 
 const now = new Date();
+// Смещение на МСК (+3 часа)
 const moscowTime = new Date(now.getTime() + 3 * 60 * 60 * 1000);
 const currentYear = moscowTime.getFullYear();
-const currentMonth = moscowTime.getMonth();
+const currentMonth = moscowTime.getMonth(); // 0-11
 
-const age = currentYear - birthYear;
 const totalMonths = totalYears * 12;
 let passedMonths = 0;
 
 const cal = document.getElementById('lifeCal');
 
+// Генерируем 90 лет (колонок)
 for (let y = 0; y < totalYears; y++) {
   const yearNum = birthYear + y;
   
-  let isCurrentYear = (yearNum === currentYear);
-  let isPastYear = (yearNum < currentYear);
-  
+  // Генерируем 12 месяцев (рядов) для каждого года
   for (let m = 0; m < 12; m++) {
     const dot = document.createElement('div');
     dot.className = 'dot';
     
-    if (isPastYear) {
+    // Логика coloring:
+    if (yearNum < currentYear) {
+      // Весь прошлый год — белый
       dot.classList.add('past');
       passedMonths++;
-    } else if (isCurrentYear) {
-      if (m <= currentMonth) {
-        dot.classList.add('current-year');
+    } else if (yearNum === currentYear) {
+      // Текущий год:
+      if (m < currentMonth) {
+        // Прошедшие месяцы этого года — белые
+        dot.classList.add('past');
         passedMonths++;
+      } else if (m === currentMonth) {
+        // ТОЛЬКО текущий месяц — оранжевый
+        dot.classList.add('current-month');
+        passedMonths++; // считаем его как пройденный для статистики
       }
+      // Остальные месяцы текущего года остаются серыми (будущее)
     }
+    // Будущие годы остаются серыми
     
     cal.appendChild(dot);
   }
