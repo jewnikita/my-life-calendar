@@ -20,7 +20,7 @@ const htmlContent = `<!DOCTYPE html>
   }
   .grid {
     position: absolute;
-    top: 30%;
+    top: 25%;
     left: 50%;
     transform: translateX(-50%);
     display: grid;
@@ -54,7 +54,7 @@ const htmlContent = `<!DOCTYPE html>
   .empty { background: transparent; }
   .stats { 
     position: absolute;
-    bottom: 20%;
+    bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
