@@ -54,7 +54,7 @@ const htmlContent = `<!DOCTYPE html>
   .empty { background: transparent; }
   .stats { 
     position: absolute;
-    bottom: 40%;
+    bottom: 36%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
