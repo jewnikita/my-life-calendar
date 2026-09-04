@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-// Точные размеры обоев для iPhone 16 / 16 Pro
+// Размеры под iPhone 16 / 16 Pro
 const WIDTH = 1179;
 const HEIGHT = 2556;
 
@@ -9,11 +9,6 @@ const html = `
 <html>
 <head>
 <meta charset="UTF-8">
-<!-- Подключаем шрифт Inter для премиального вида -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
@@ -25,15 +20,16 @@ const html = `
     flex-direction: column; 
     align-items: center; 
     justify-content: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    -webkit-font-smoothing: antialiased; /* Делает шрифт тонким и четким как на iOS */
+    /* Используем системный шрифт Apple - он гарантированно есть на сервере рендеринга */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
   
   .months-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px; /* Отступы между месяцами */
+    gap: 30px;
     width: 92%;
     margin-bottom: 40px;
   }
@@ -45,32 +41,32 @@ const html = `
   }
 
   .month-name {
-    font-size: 28px; /* Аккуратный размер заголовка */
+    font-size: 28px;
     color: #555;
     margin-bottom: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    text-transform: uppercase; /* Делаем месяцы прописными для стиля */
+    text-transform: uppercase;
   }
 
   .days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px; /* Расстояние между точками */
+    gap: 10px;
     width: 100%;
     justify-items: center;
   }
 
   .day {
-    width: 22px; /* Крупные точки */
+    width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #222; /* Цвет будущих дней */
+    background: #222;
   }
 
   .day.past { background: #ffffff; }
-  .day.today { background: #ff3b30; } /* Фирменный красный Apple */
-  .day.empty { background: transparent; } /* Пустые клетки для выравнивания */
+  .day.today { background: #ff3b30; }
+  .day.empty { background: transparent; }
 
   .stats {
     font-size: 42px;
@@ -176,8 +172,8 @@ document.getElementById('percent').textContent = percent + '%';
   await page.setViewport({ width: WIDTH, height: HEIGHT });
   await page.setContent(html);
   
-  // Небольшая пауза для загрузки шрифтов
-  await new Promise(r => setTimeout(r, 1000));
+  // Небольшая пауза для рендеринга
+  await new Promise(r => setTimeout(r, 500));
 
   await page.screenshot({
     path: 'calendar.png',
