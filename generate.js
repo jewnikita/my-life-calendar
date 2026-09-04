@@ -54,7 +54,7 @@ const htmlContent = `<!DOCTYPE html>
   .empty { background: transparent; }
   .stats { 
     position: absolute;
-    bottom: 20%;                 /* <-- МЕНЯЙ ЭТО: чем больше %, тем выше текст */
+    bottom: 36%;                 /* <-- МЕНЯЙ ЭТО: чем больше %, тем выше текст */
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
