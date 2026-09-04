@@ -9,7 +9,7 @@ const htmlContent = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <style>
   body { 
-    background: #000; 
+    background: #1A1A1A; 
     width: ${WIDTH}px; 
     height: ${HEIGHT}px; 
     display: flex; 
@@ -29,7 +29,7 @@ const htmlContent = `<!DOCTYPE html>
   }
   .month { text-align: center; }
   .name { 
-    color: #555; 
+    color: #666; 
     font-size: 26px; 
     margin-bottom: 12px; 
     font-weight: 400;
@@ -46,10 +46,10 @@ const htmlContent = `<!DOCTYPE html>
     width: 20px; 
     height: 20px; 
     border-radius: 50%; 
-    background: #222; 
+    background: #2E2E2E; 
   }
   .past { background: #fff; }
-  .today { background: #ff3b30; }
+  .today { background: #DC7252; }
   .empty { background: transparent; }
   .stats { 
     margin-top: 50px; 
@@ -60,8 +60,8 @@ const htmlContent = `<!DOCTYPE html>
     gap: 20px;
     align-items: baseline;
   }
-  .days-left { color: #ff3b30; font-weight: 300; }
-  .percent { color: #555; font-weight: 300; }
+  .days-left { color: #DC7252; font-weight: 300; }
+  .percent { color: #666; font-weight: 300; }
 </style>
 </head>
 <body>
