@@ -15,7 +15,7 @@ const htmlContent = `<!DOCTYPE html>
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    padding-top: 8%;                    // <-- отступ сверху (чем больше %, тем ниже календарь)
+    padding-top: 50%;                    // <-- отступ сверху (чем больше %, тем ниже календарь)
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
