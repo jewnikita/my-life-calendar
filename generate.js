@@ -1,12 +1,3 @@
-const puppeteer = require('puppeteer');
-
-const WIDTH = 1179;
-const HEIGHT = 2556;
-
-const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <style>
   body { 
     background: #1A1A1A; 
@@ -20,7 +11,7 @@ const htmlContent = `<!DOCTYPE html>
   }
   .grid {
     position: absolute;
-    top: 30,5;
+    top: 30%;                    /* <-- МЕНЯЙ ЭТО: чем больше %, тем ниже месяцы */
     left: 50%;
     transform: translateX(-50%);
     display: grid;
@@ -54,7 +45,7 @@ const htmlContent = `<!DOCTYPE html>
   .empty { background: transparent; }
   .stats { 
     position: absolute;
-    bottom: 36%;
+    bottom: 20%;                 /* <-- МЕНЯЙ ЭТО: чем больше %, тем выше текст */
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
@@ -73,63 +64,3 @@ const htmlContent = `<!DOCTYPE html>
     font-weight: 300; 
   }
 </style>
-</head>
-<body>
-<div class="grid" id="cal"></div>
-<div class="stats">
-  <span class="days-left" id="daysLeft"></span>
-  <span class="percent" id="percent"></span>
-</div>
-<script>
-const m = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-const now = new Date();
-const y = now.getFullYear(), cm = now.getMonth(), cd = now.getDate();
-const leap = (y%4===0 && y%100!==0) || y%400===0;
-const dim = [31, leap?29:28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-let passed = 0, total = 365 + (leap?1:0);
-const cal = document.getElementById('cal');
-
-m.forEach((name, mi) => {
-  const md = document.createElement('div'); md.className='month';
-  const nd = document.createElement('div'); nd.className='name'; nd.innerText=name; md.appendChild(nd);
-  const dd = document.createElement('div'); dd.className='days';
-  
-  let fd = new Date(y, mi, 1).getDay();
-  fd = (fd === 0) ? 6 : fd - 1;
-  
-  for(let i=0; i<fd; i++) { 
-    const e=document.createElement('div'); 
-    e.className='dot empty'; 
-    dd.appendChild(e); 
-  }
-  
-  for(let d=1; d<=dim[mi]; d++) {
-    const dot = document.createElement('div'); dot.className='dot';
-    if(mi < cm) { dot.classList.add('past'); passed++; }
-    else if(mi === cm) {
-      if(d < cd) { dot.classList.add('past'); passed++; }
-      else if(d === cd) { dot.classList.add('today'); passed++; }
-    }
-    dd.appendChild(dot);
-  }
-  md.appendChild(dd); cal.appendChild(md);
-});
-
-const left = total - passed;
-const percent = Math.round((passed/total)*100);
-
-document.getElementById('daysLeft').innerText = left + ' дней осталось';
-document.getElementById('percent').innerText = percent + '%';
-</script>
-</body></html>`;
-
-(async () => {
-  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-  const page = await browser.newPage();
-  await page.setViewport({ width: WIDTH, height: HEIGHT });
-  await page.setContent(htmlContent);
-  await new Promise(r => setTimeout(r, 1000));
-  await page.screenshot({ path: 'calendar.png', type: 'png' });
-  await browser.close();
-  console.log('Done!');
-})();
