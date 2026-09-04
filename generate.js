@@ -15,7 +15,7 @@ const htmlContent = `<!DOCTYPE html>
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    padding-top: 25%;
+    justify-content: center;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
@@ -112,7 +112,7 @@ m.forEach((name, mi) => {
 });
 
 const left = total - passed;
-const percent = Math.round((passed/total)*100); 
+const percent = Math.round((passed/total)*100);
 
 document.getElementById('daysLeft').innerText = left + ' дней осталось';
 document.getElementById('percent').innerText = percent + '%';
