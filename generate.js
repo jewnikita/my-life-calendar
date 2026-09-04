@@ -15,11 +15,13 @@ const htmlContent = `<!DOCTYPE html>
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    justify-content: center;
+    /* Смещаем контент выше, чтобы освободить место под виджеты внизу */
+    padding-top: 10%; 
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     margin: 0; padding: 0;
+    box-sizing: border-box;
   }
   .grid {
     display: grid;
@@ -29,7 +31,8 @@ const htmlContent = `<!DOCTYPE html>
   }
   .month { text-align: center; }
   .name { 
-    color: #666; 
+    /* Более контрастный серый для названий месяцев */
+    color: #888; 
     font-size: 26px; 
     margin-bottom: 12px; 
     font-weight: 400;
@@ -49,10 +52,10 @@ const htmlContent = `<!DOCTYPE html>
     background: #2E2E2E; 
   }
   .past { background: #fff; }
-  .today { background: #DC7252; }
+  .today { background: #FF7A45; } /* Яркий оранжевый */
   .empty { background: transparent; }
   .stats { 
-    margin-top: 50px; 
+    margin-top: 40px; 
     font-size: 40px; 
     font-weight: 300;
     letter-spacing: -0.5px;
@@ -60,8 +63,14 @@ const htmlContent = `<!DOCTYPE html>
     gap: 20px;
     align-items: baseline;
   }
-  .days-left { color: #DC7252; font-weight: 300; }
-  .percent { color: #666; font-weight: 300; }
+  .days-left { 
+    color: #FF7A45; /* Яркий оранжевый */
+    font-weight: 300; 
+  }
+  .percent { 
+    color: #888; /* Более контрастный серый */
+    font-weight: 300; 
+  }
 </style>
 </head>
 <body>
@@ -106,7 +115,8 @@ m.forEach((name, mi) => {
 });
 
 const left = total - passed;
-const percent = ((passed/total)*100).toFixed(1);
+// Округление до целого числа
+const percent = Math.round((passed/total)*100);
 
 document.getElementById('daysLeft').innerText = left + ' дней осталось';
 document.getElementById('percent').innerText = percent + '%';
