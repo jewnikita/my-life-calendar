@@ -60,7 +60,7 @@ const htmlContent = `<!DOCTYPE html>
   
   .stats { 
     position: absolute;
-    top: 1614px;           /* Было 34% */
+    top: 1590px;           /* Было 34% */
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
