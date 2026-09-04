@@ -22,7 +22,7 @@ const htmlContent = `<!DOCTYPE html>
   
   .grid {
     position: absolute;
-    top: 700px;              /* Было 30% */
+    top: 730px;              /* Было 30% */
     left: 50%;
     transform: translateX(-50%);
     display: grid;
@@ -60,7 +60,7 @@ const htmlContent = `<!DOCTYPE html>
   
   .stats { 
     position: absolute;
-    bottom: 869px;           /* Было 34% */
+    bottom: 880px;           /* Было 34% */
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
