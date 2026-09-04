@@ -17,10 +17,12 @@ const htmlContent = `<!DOCTYPE html>
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     margin: 0; padding: 0;
+    overflow: hidden;
   }
+  
   .grid {
     position: absolute;
-    top: 30%;                    /* <-- МЕНЯЙ ЭТО: чем больше %, тем ниже месяцы */
+    top: 767px;              /* Было 30% */
     left: 50%;
     transform: translateX(-50%);
     display: grid;
@@ -28,6 +30,7 @@ const htmlContent = `<!DOCTYPE html>
     gap: 24px;
     width: 88%;
   }
+  
   .month { text-align: center; }
   .name { 
     color: #888; 
@@ -43,18 +46,21 @@ const htmlContent = `<!DOCTYPE html>
     gap: 9px;
     justify-items: center;
   }
+  
   .dot { 
-    width: 20px; 
-    height: 20px; 
+    width: 24px; 
+    height: 24px; 
     border-radius: 50%; 
     background: #2E2E2E; 
   }
+  
   .past { background: #fff; }
   .today { background: #FF7A45; } 
   .empty { background: transparent; }
+  
   .stats { 
     position: absolute;
-    bottom: 34%;                 /* <-- МЕНЯЙ ЭТО: чем больше %, тем выше текст */
+    bottom: 869px;           /* Было 34% */
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px; 
@@ -64,6 +70,7 @@ const htmlContent = `<!DOCTYPE html>
     gap: 20px;
     align-items: baseline;
   }
+  
   .days-left { 
     color: #FF7A45; 
     font-weight: 300; 
@@ -82,7 +89,6 @@ const htmlContent = `<!DOCTYPE html>
 </div>
 <script>
 const m = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-// СМЕЩЕНИЕ ВРЕМЕНИ НА +3 ЧАСА ДЛЯ МСК
 const now = new Date();
 const moscowTime = new Date(now.getTime() + 3 * 60 * 60 * 1000);
 const y = moscowTime.getFullYear(), cm = moscowTime.getMonth(), cd = moscowTime.getDate();
@@ -135,3 +141,4 @@ document.getElementById('percent').innerText = percent + '%';
   await browser.close();
   console.log('Done!');
 })();
+
