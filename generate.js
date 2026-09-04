@@ -1,150 +1,90 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 
-const html = `
-<!DOCTYPE html>
+const WIDTH = 1179;
+const HEIGHT = 2556;
+
+const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { 
-  background: #000; 
-  width: 1080px; 
-  height: 2340px; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-  overflow: hidden;
-}
-.months-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 60px;
-  width: 90%;
-  margin-bottom: 80px;
-}
-.month {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.month-name {
-  font-size: 36px;
-  color: #666;
-  margin-bottom: 30px;
-  font-weight: 500;
-}
-.days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-}
-.day {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #2a2a2a;
-}
-.day.past { background: #fff; }
-.day.today { background: #ff453a; }
-.stats {
-  font-size: 48px;
-  margin-top: 60px;
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-.days-left { color: #ff453a; }
-.percent { color: #666; }
+  body { 
+    background: #000; 
+    width: ${WIDTH}px; 
+    height: ${HEIGHT}px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0; padding: 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 90%;
+  }
+  .month { text-align: center; }
+  .name { color: #666; font-size: 24px; margin-bottom: 10px; font-weight: 600; }
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    justify-items: center;
+  }
+  .dot { width: 18px; height: 18px; border-radius: 50%; background: #222; }
+  .past { background: #fff; }
+  .today { background: #ff3b30; }
+  .empty { background: transparent; }
+  .stats { margin-top: 40px; font-size: 36px; color: #ff3b30; font-weight: 500; }
 </style>
 </head>
 <body>
-<div class="months-grid" id="calendar"></div>
-<div class="stats">
-  <span class="days-left" id="daysLeft"></span>
-  <span class="percent" id="percent"></span>
-</div>
-
+<div class="grid" id="cal"></div>
+<div class="stats" id="stat"></div>
 <script>
-const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+const m = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
 const now = new Date();
-const year = now.getFullYear();
-const currentMonth = now.getMonth();
-const currentDay = now.getDate();
+const y = now.getFullYear(), cm = now.getMonth(), cd = now.getDate();
+const leap = (y%4===0 && y%100!==0) || y%400===0;
+const dim = [31, leap?29:28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+let passed = 0, total = 365 + (leap?1:0);
+const cal = document.getElementById('cal');
 
-const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-const calendar = document.getElementById('calendar');
-let totalDaysPassed = 0;
-const totalDays = 365 + (isLeap ? 1 : 0);
-
-months.forEach((monthName, monthIndex) => {
-  const monthDiv = document.createElement('div');
-  monthDiv.className = 'month';
+m.forEach((name, mi) => {
+  const md = document.createElement('div'); md.className='month';
+  const nd = document.createElement('div'); nd.className='name'; nd.innerText=name; md.appendChild(nd);
+  const dd = document.createElement('div'); dd.className='days';
   
-  const nameDiv = document.createElement('div');
-  nameDiv.className = 'month-name';
-  nameDiv.textContent = monthName;
-  monthDiv.appendChild(nameDiv);
+  let fd = new Date(y, mi, 1).getDay();
+  fd = (fd === 0) ? 6 : fd - 1;
   
-  const daysGrid = document.createElement('div');
-  daysGrid.className = 'days-grid';
+  for(let i=0; i<fd; i++) { const e=document.createElement('div'); e.className='dot empty'; dd.appendChild(e); }
   
-  const daysCount = daysInMonths[monthIndex];
-  for (let day = 1; day <= daysCount; day++) {
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'day';
-    
-    if (monthIndex < currentMonth) {
-      dayDiv.classList.add('past');
-      totalDaysPassed++;
-    } else if (monthIndex === currentMonth) {
-      if (day < currentDay) {
-        dayDiv.classList.add('past');
-        totalDaysPassed++;
-      } else if (day === currentDay) {
-        dayDiv.classList.add('today');
-        totalDaysPassed++;
-      }
+  for(let d=1; d<=dim[mi]; d++) {
+    const dot = document.createElement('div'); dot.className='dot';
+    if(mi < cm) { dot.classList.add('past'); passed++; }
+    else if(mi === cm) {
+      if(d < cd) { dot.classList.add('past'); passed++; }
+      else if(d === cd) { dot.classList.add('today'); passed++; }
     }
-    
-    daysGrid.appendChild(dayDiv);
+    dd.appendChild(dot);
   }
-  
-  monthDiv.appendChild(daysGrid);
-  calendar.appendChild(monthDiv);
+  md.appendChild(dd); cal.appendChild(md);
 });
 
-const daysLeft = totalDays - totalDaysPassed;
-const percent = ((totalDaysPassed / totalDays) * 100).toFixed(1);
-
-document.getElementById('daysLeft').textContent = daysLeft + 'd left';
-document.getElementById('percent').textContent = percent + '%';
+document.getElementById('stat').innerText = (total-passed) + 'd left  ' + ((passed/total)*100).toFixed(1) + '%';
 </script>
-</body>
-</html>
-`;
+</body></html>`;
 
 (async () => {
-  const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const page = await browser.newPage();
-  
-  await page.setViewport({ width: 1080, height: 2340 });
-  await page.setContent(html);
-  
-  await page.screenshot({
-    path: 'calendar.png',
-    type: 'png',
-    clip: { x: 0, y: 0, width: 1080, height: 2340 }
-  });
-  
+  await page.setViewport({ width: WIDTH, height: HEIGHT });
+  await page.setContent(htmlContent);
+  await new Promise(r => setTimeout(r, 1000));
+  await page.screenshot({ path: 'calendar.png', type: 'png' });
   await browser.close();
-  console.log('Calendar PNG generated!');
+  console.log('Done!');
 })();
-
