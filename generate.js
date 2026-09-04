@@ -12,16 +12,17 @@ const htmlContent = `<!DOCTYPE html>
     background: #1A1A1A; 
     width: ${WIDTH}px; 
     height: ${HEIGHT}px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center;
+    position: relative;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     margin: 0; padding: 0;
   }
   .grid {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
@@ -52,7 +53,10 @@ const htmlContent = `<!DOCTYPE html>
   .today { background: #FF7A45; } 
   .empty { background: transparent; }
   .stats { 
-    margin-top: 40px; 
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 40px; 
     font-weight: 300;
     letter-spacing: -0.5px;
