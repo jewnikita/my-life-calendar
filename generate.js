@@ -15,7 +15,7 @@ const htmlContent = `<!DOCTYPE html>
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    padding-top: 50%; /* <-- меняй это число: 20%, 25%, 30% */
+    padding-top: 25%;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
